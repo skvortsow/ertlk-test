@@ -2,27 +2,27 @@
   <div class="equip">
     <div v-for="(item, index) in equip" class="equip-row">
       <div class="equip-remove" @click="remove(index)"></div>
-      <div class="equip-name">{{ item.name }}</div>
-      <div class="equip-count">{{ item.amount }}</div>
+      <input class="equip-name" type="text" v-model="item.name" />
+      <input class="equip-count" type="number" min="1" v-model="item.amount" />
       <div class="equip-menu"></div>
     </div>
     <div class="equip-add" @click="showModal">Добавить оборудование</div>
-    <dialog class="equip-modal" ref="modal">
-      <div class="close" @click="closeModal">Закрыть</div>
-      <input type="text" class="equip-input" v-model="newEquipName" />
+    <dialog class="modal" ref="modal">
+      <div class="close" @click="closeModal"></div>
+      <input type="text" class="modal__input" v-model="newEquipName" />
       <input
         type="number"
-        class="equip-input"
+        class="modal__input"
         min="1"
         v-model="newEquipCount"
       />
-      <div class="equip-add" @click="addEquip">Добавить оборудование</div>
+      <div class="modal__add" @click="addEquip">Добавить оборудование</div>
     </dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
   equip: Array,
@@ -127,7 +127,7 @@ const addEquip = () => {
   cursor: pointer;
 }
 
-.equip-modal[open=""] {
+.modal[open=""] {
   position: relative;
   padding: 30px;
   gap: 5px;

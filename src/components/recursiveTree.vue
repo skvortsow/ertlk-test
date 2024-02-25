@@ -1,6 +1,6 @@
 <template>
   <div class="tree">
-    <div v-for="item in arrayTree" class="tree-level">
+    <div v-for="(item, index) in arrayTree" class="tree-level">
       <div class="tree-parent">
         <div
           class="tree-btn-show"
@@ -8,7 +8,14 @@
           @click.stop="showChild(item)"
         ></div>
         <span class="tree-parent-name">{{ item.name }}</span>
-        <div class="tree-drag-point"></div>
+        <div class="action-menu">
+          <actionMenu
+            :row="item"
+            @delete-row="deleteRow(index)"
+            @add-row="showPopup(index)"
+            @change-row="showPopup(index, true)"
+          ></actionMenu>
+        </div>
       </div>
       <div class="tree-child">
         <recursiveTree
@@ -18,18 +25,60 @@
         <EquipTable v-if="item.equip && item.showChild" :equip="item.equip" />
       </div>
     </div>
+    <addElementPopup
+      v-if="showModal"
+      :name="changingName"
+      @submit-modal="saveRow"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
 import EquipTable from "./EquipTable.vue";
+import actionMenu from "./actionMenu.vue";
+import addElementPopup from "./addElementPopup.vue";
+import { ref } from "vue";
 
-defineProps({
+const props = defineProps({
   arrayTree: Array,
 });
 
+let showModal = ref(false);
+let changingName = ref("");
+let changingRow = ref(null);
+
 const showChild = (item) => {
   item.showChild = !item.showChild;
+};
+
+const deleteRow = (index) => {
+  props.arrayTree.splice(index, 1);
+};
+
+const saveRow = ([newName, changeName]) => {
+  if (changeName) {
+    changingRow.name = newName;
+  } else {
+    changingRow.childs.push({ name: newName, childs: [] });
+  }
+
+  changingName = "";
+  changingRow = null;
+  showModal.value = false;
+};
+
+const showPopup = (index, changeName = false) => {
+  changingRow = props.arrayTree[index];
+  if (changeName) {
+    changingName = changingRow.name;
+  }
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  changingName = "";
+  showModal.value = false;
 };
 </script>
 
@@ -38,6 +87,15 @@ const showChild = (item) => {
   display: flex;
   gap: 6px;
   align-items: center;
+}
+
+.action-menu {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tree-parent:hover .action-menu {
+  opacity: 1;
 }
 
 .tree-drag-point {

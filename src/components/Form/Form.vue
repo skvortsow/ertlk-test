@@ -1,53 +1,48 @@
-<script>
+<script setup>
 import { useUserStore } from "../../stores";
+import { onMounted, defineEmits, computed } from "vue";
 
-export default {
-  name: "Form",
-  props: {
-    btnText: String,
-    error: String,
-    title: String,
-  },
-  data() {
-    return {
-      login: "",
-      password: "",
-      errorText: "",
-    };
-  },
-  created() {
-    useUserStore().loadUsers();
-  },
-  methods: {
-    sendForm() {
-      event.preventDefault();
-      const userData = {
-        login: this.login,
-        password: this.password,
-      };
-      if (!this.login || !this.password) {
-        this.errorText = "Оба поля обязательны к заполнению";
-        return;
-      } else {
-        this.$emit("sendForm", userData);
-      }
-    },
-    resetError() {
-      if (this.errorText) {
-        this.errorText = "";
-      }
-    },
-    //хуево работает приходящая ошибка
-  },
-  computed: {
-    btnDisabled() {
-      return this.errorText.length > 0;
-    },
-    actualError() {
-      return this.errorText || this.error;
-    },
-  },
+const props = defineProps({
+  btnText: String,
+  error: String,
+  title: String,
+});
+
+let login = "";
+let password = "";
+let errorText = "";
+const emit = defineEmits();
+
+const btnDisabled = computed(() => {
+  return errorText.length > 0;
+});
+const actualError = computed(() => {
+  return errorText || props.error;
+});
+
+onMounted(() => {
+  useUserStore().loadUsers();
+});
+
+const sendForm = () => {
+  event.preventDefault();
+  const userData = {
+    login: login,
+    password: password,
+  };
+  if (!login || !password) {
+    errorText = "Оба поля обязательны к заполнению";
+    return;
+  } else {
+    emit("sendForm", userData);
+  }
 };
+const resetError = () => {
+  if (errorText) {
+    errorText = "";
+  }
+};
+//хуево работает приходящая ошибка
 </script>
 
 <template>

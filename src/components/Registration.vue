@@ -9,39 +9,28 @@
     >Уже зарегистрированы? Войти</router-link
   >
 </template>
-<script>
+<script setup>
 import Form from "./Form/Form.vue";
+import router from "../router";
 import { useUserStore } from "../stores";
+import { ref } from "vue";
 
-export default {
-  data() {
-    return {
-      login: "",
-      password: "",
-      error: "",
-    };
-  },
-  components: {
-    Form,
-  },
-  mounted() {
-    this.userStore = useUserStore();
-  },
-  methods: {
-    register(user) {
-      event.preventDefault();
-      const registeredUser = this.userStore.usersList.find((registeredUser) => {
-        return registeredUser.login === user.login;
-      });
+const error = ref("");
 
-      if (registeredUser) {
-        this.error = "Логин занят";
-      } else {
-        this.userStore.addUser(user);
-        this.$router.push({ name: "login" });
-      }
-    },
-  },
+const userStore = useUserStore();
+
+const register = (user) => {
+  event.preventDefault();
+  const registeredUser = userStore.usersList.find((registeredUser) => {
+    return registeredUser.login === user.login;
+  });
+
+  if (registeredUser) {
+    error.value = "Логин занят";
+  } else {
+    userStore.addUser(user);
+    router.push({ name: "login" });
+  }
 };
 </script>
 

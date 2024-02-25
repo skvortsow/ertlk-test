@@ -1,41 +1,15 @@
 <template>
   <div class="main">
-    <RecursiveTree :array-tree="addressesList"></RecursiveTree>
+    <RecursiveTree :array-tree="localAddressesList"></RecursiveTree>
   </div>
 </template>
-<script>
+<script setup>
 import addressesList from "../addressesList";
 import RecursiveTree from "./recursiveTree.vue";
-export default {
-  data() {
-    return {
-      addressesList: [],
-    };
-  },
-  created() {
-    this.addressesList = addressesList;
-  },
-  computed: {
-    getSymbol(array, index) {
-      if (index === 0) {
-        return "";
-      }
-    },
-  },
-  methods: {
-    showChild(target) {
-      target.showChild = !target.showChild;
-    },
-    changeEquipAmount(equip, more) {
-      if (more) {
-        equip.amount += 1;
-      } else {
-        equip.amount -= 1;
-      }
-    },
-  },
-  components: { RecursiveTree },
-};
+import { ref } from "vue";
+
+const localAddressesList = ref([]);
+localAddressesList.value = addressesList;
 </script>
 
 <style>
